@@ -1,0 +1,23 @@
+- name: Parse configuration from terraform and patch hosts.yml
+  hosts: 
+    - local_machine
+  tasks:
+    - name: Create ssh key directory if not exists
+      shell: mkdir -p ~/.ssh
+
+    - name: Configure the private key
+      shell: terraform -chdir=../terraform output tls_private_key | sed '1d' | sed '$d' > ~/.ssh/azureuser_privatekey
+
+    - name: Set the file permissions of the private key file
+      shell: chmod 600 ~/.ssh/azureuser_privatekey
+
+    - name: Replace frontend public ip variable in hosts file
+      shell: |
+        frontendip=$(terraform -chdir=../terraform output frontendvm_publicip | sed 's/"//g')
+        sed "s/#frontendvm_ip#/$frontendip/g" hosts.yaml > hosts_tokenized.yaml
+
+    - name: Replace backend public ip variable in hosts file
+      shell: |
+        backendip=$(terraform -chdir=../terraform output backendvm_publicip | sed 's/"//g')
+        sed "s/#backendvm_ip#/$backendip/g" hosts_tokenized.yaml > hosts_tokenized2.yaml
+      

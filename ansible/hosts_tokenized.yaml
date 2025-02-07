@@ -1,0 +1,19 @@
+local_machine:
+  hosts:
+    localhost:
+      ansible_connection: local
+frontend_hosts:
+  hosts:
+    frontendvm:
+      ansible_user: azureuser
+      ansible_port: 22
+      ansible_host: 52.166.51.31
+      ansible_ssh_private_key_file: ~/.ssh/azureuser_privatekey
+    backendvm:
+      ansible_user: azureuser
+      ansible_port: 22
+      ansible_host: #backendvm_ip#
+      ansible_ssh_private_key_file: ~/.ssh/azureuser_privatekey
+backend_hosts:
+  hosts:
+    postgreshost:

@@ -1,0 +1,27 @@
+- name: Run the vote app on the frontend machine
+  hosts: 
+    - frontendvm
+  become: true
+  tasks:
+    - name: deploy voteapp
+      shell: |
+        docker stop voteapp
+        docker rm voteapp
+        docker run --name voteapp -d -p 80:80 -v /etc/hosts:/etc/hosts:ro karlmtc/ironhack:voteapp 
+    
+    - name: Add entry for Redis in /etc/hosts on vote VM 
+      lineinfile:
+        path: /etc/hosts 
+        line: "10.0.2.4 redis"
+        state: present
+
+- name: deploy backend
+  hosts:
+  - backendvm
+  become: true
+  tasks:
+    - name: deploy voteapp
+      shell: |
+        docker stop resultapp
+        docker rm resultapp
+        docker run --name resultapp -d -p 8090:80 karlmtc/ironhack:resultapp

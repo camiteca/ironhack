@@ -1,0 +1,13 @@
+- name: Run the vote app on the frontend machine
+  hosts: 
+    - backendvm
+  become: true
+  tasks:
+    - name: deploying redis
+      docker_container:
+        name: voteapp
+        state: started
+        image: "redis:latest"
+        pull: true
+        ports:
+          - "6379:6379"
